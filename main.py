@@ -30,8 +30,17 @@ player_y = 480
 player_x_change = 0
 player_y_change = 0
 
+# Enemy function
+enemy_img = pygame.image.load("./Space_Invaders/ovni.png")
+enemy_x = 370
+enemy_y = 50
+enemy_x_change = 0
+
 def player(x,y):
     screen.blit(player_img, (x,y))
+
+def enemy(x,y):
+     screen.blit(enemy_img, (x,y))
 
 # Game loop
 
@@ -43,14 +52,14 @@ while running == True:
             running = False
         if event.type == pygame.KEYDOWN:
               if event.key == pygame.K_a:
-                  player_x_change = -0.5
+                  player_x_change = -0.9
               if event.key == pygame.K_d:
-                  player_x_change = 0.5
+                  player_x_change = 0.9
 
               if event.key == pygame.K_w:
-                  player_y_change = -0.5
+                  player_y_change = -0.9
               if event.key == pygame.K_s:
-                  player_y_change = 0.5
+                  player_y_change = 0.9
         if event.type == pygame.KEYUP:
                if event.key == pygame.K_a:
                     player_x_change = 0
@@ -67,8 +76,30 @@ while running == True:
     # player movements
     player_x += player_x_change
     player_y += player_y_change
+
+    # Limites
+    if player_x >=736:
+         player_x = 736
+    
+    if player_x <=0:
+         player_x = 0
+
+    if player_y >=545:
+         player_y = 545
+
+    if player_y <=0:
+         player_y = 0
+
+    
+    
+
+
+
     # Player blit
     player(player_x,player_y)
+
+    # Enemy blit
+    enemy (enemy_x,enemy_y)
 
     pygame.display.flip()
 pygame.quit()
