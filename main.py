@@ -2,6 +2,8 @@
 import pygame
 # importing random
 import random
+# importing random
+import math
 # initializate pygame
 pygame.init()
 
@@ -53,7 +55,12 @@ def fire (x,y):
      bullet_state = False
      screen.blit(bullet_img, (x + 16 , y + 16))
 # Game loop
-
+def is_collision(b_x, b_y, e_x, e_y):
+     distance = math.sqrt((e_x - b_x)**2 + (e_y - b_y)**2)
+     if distance < 27:
+          return True
+     else:
+          return False
 running = True
 while running == True:
     for event in pygame.event.get():
@@ -65,7 +72,8 @@ while running == True:
                   player_x_change = -0.5
               if event.key == pygame.K_d:
                   player_x_change = 0.5
-              if event.key == pygame.K_SPACE:
+              if event.key == pygame.K_SPACE and bullet_state == True:
+                  bullet_x = player_x
                   bullet_state = False
               if event.key == pygame.K_w:
                   player_y_change = -0.5
@@ -85,12 +93,19 @@ while running == True:
     screen.blit(background_img, (0,0))
 
     # Bullet blit
+    collision = is_collision(bullet_x,bullet_y,enemy_x,enemy_y)
+    if collision:
+         bullet_state = True
+         bullet_y = 480
+         enemy_x = random.randint(0, 800)
+         enemy_y = random.randint(50, 150)
+
     if bullet_y <= 0:
          bullet_y = 480
          bullet_state = True
 
     if bullet_state == False:
-        fire(player_x, bullet_y)
+        fire(bullet_x, bullet_y)
         bullet_y -= bullet_y_change
 
     # player movements
