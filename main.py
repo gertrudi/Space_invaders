@@ -35,13 +35,21 @@ player_y_change = 0
 def player(x,y):
     screen.blit(player_img, (x,y))
 # Enemy function
-enemy_img = pygame.image.load("./Space_Invaders/ovni.png")
-enemy_x = random.randint(0,800)
-enemy_y = random.randint(50, 150)
-enemy_x_change = 0.3
-enemy_y_change = 40
-def enemy(x,y):
-     screen.blit(enemy_img, (x,y))
+enemy_img = []
+enemy_x = []
+enemy_y = []
+enemy_x_change = []
+enemy_y_change = []
+number_enemies = 8
+
+for item in range(number_enemies):
+     enemy_img.append(pygame.image.load("./Space_Invaders/ovni.png"))
+     enemy_x.append(random.randint(0,720))
+     enemy_y.append(random.randint(50, 150))
+     enemy_x_change.append(0.8)
+     enemy_y_change.append(40)
+     def enemy(x,y):
+          screen.blit(enemy_img[item], (x,y))
 
 # Bullet function
 bullet_img = pygame.image.load("./Space_Invaders/bala.png")
@@ -69,16 +77,16 @@ while running == True:
             running = False
         if event.type == pygame.KEYDOWN:
               if event.key == pygame.K_a:
-                  player_x_change = -0.5
+                  player_x_change = -0.9
               if event.key == pygame.K_d:
-                  player_x_change = 0.5
+                  player_x_change = 0.9
               if event.key == pygame.K_SPACE and bullet_state == True:
                   bullet_x = player_x
                   bullet_state = False
               if event.key == pygame.K_w:
-                  player_y_change = -0.5
+                  player_y_change = -0.9
               if event.key == pygame.K_s:
-                  player_y_change = 0.5
+                  player_y_change = 0.9
         if event.type == pygame.KEYUP:
                if event.key == pygame.K_a:
                     player_x_change = 0
@@ -93,12 +101,7 @@ while running == True:
     screen.blit(background_img, (0,0))
 
     # Bullet blit
-    collision = is_collision(bullet_x,bullet_y,enemy_x,enemy_y)
-    if collision:
-         bullet_state = True
-         bullet_y = 480
-         enemy_x = random.randint(0, 800)
-         enemy_y = random.randint(50, 150)
+    
 
     if bullet_y <= 0:
          bullet_y = 480
@@ -134,16 +137,28 @@ while running == True:
     player(player_x,player_y)
 
     # Enemy blit
-    enemy (enemy_x,enemy_y)
 
-    enemy_x += enemy_x_change
-    if enemy_x <= 0:
-         enemy_x_change = 0.3
-         enemy_y += enemy_y_change
-    
-    if enemy_x >= 736:
-         enemy_x_change = -0.3
-         enemy_y += enemy_y_change
+    for item in range(number_enemies):
+          enemy_x[item] += enemy_x_change[item]
+          if enemy_x[item] <= 0:
+               enemy_x_change[item] = 0.8
+               enemy_y[item] += enemy_y_change[item]
+          
+          if enemy_x[item] >= 736:
+               enemy_x_change[item] = -0.8
+               enemy_y[item] += enemy_y_change[item]
+
+          collision = is_collision(bullet_x,bullet_y,enemy_x[item],enemy_y[item])
+          if collision:
+               bullet_state = True
+               bullet_y = 480
+               enemy_x[item] = random.randint(0, 800)
+               enemy_y[item] = random.randint(50, 150)
+
+
+          enemy(enemy_x[item], enemy_y[item])
+
+
 
     pygame.display.flip()
 pygame.quit()
