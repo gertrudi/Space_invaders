@@ -1,11 +1,21 @@
 # importing pygame
 import pygame
+
 # importing random
 import random
+
+# importing mixer class
+from pygame import mixer
+
 # importing random
 import math
 # initializate pygame
 pygame.init()
+
+# Background Sound
+mixer.music.load("./Space_Invaders\Music\super-smash-bros-ultimate.wav")
+mixer.music.play(-1)
+mixer.music.set_volume(1)
 
 # window size
 screen_width = 800
@@ -51,6 +61,7 @@ for item in range(number_enemies):
      def enemy(x,y):
           screen.blit(enemy_img[item], (x,y))
 
+
 # Bullet function
 bullet_img = pygame.image.load("./Space_Invaders/bala.png")
 bullet_x = 0
@@ -58,6 +69,19 @@ bullet_y = 400
 bullet_state = True
 bullet_y_change = 10
 bullet_x_change = 0
+
+# Score variable
+score = 0 
+
+score_font = pygame.font.Font("./Space_Invaders\COMICATE.TTF", 32)
+
+text_x = 10
+text_y = 10
+# Show text score
+def show_text( x,y ):
+     score_text = score_font.render(f"SCORE:  {score}", True, (255,255,255) )
+     screen.blit(score_text, ( x,y )) 
+
 def fire (x,y):
      global bullet_state
      bullet_state = False
@@ -69,6 +93,13 @@ def is_collision(b_x, b_y, e_x, e_y):
           return True
      else:
           return False
+     
+def game_over(x,y):
+     go_text = score_font.render(f"GAME OVER !!! ",True, (255,255,255))
+     screen.blit(go_text,(x,y))
+     go_sound = mixer.Sound("./Space_Invaders\Music\yt5s.io-Metal-Gear-Solid-2-Game-Over-_Snake-Music-only_-_128-kbps_.wav")
+     mixer.music.set_volume(0.2)
+     go_sound.play()
 running = True
 while running == True:
     for event in pygame.event.get():
@@ -82,6 +113,8 @@ while running == True:
                   player_x_change = 0.9
               if event.key == pygame.K_SPACE and bullet_state == True:
                   bullet_x = player_x
+                  bullet_sound = mixer.Sound("./Space_Invaders\Music\chinese-doit-sound-effect.wav")
+                  bullet_sound.play()
                   bullet_state = False
               if event.key == pygame.K_w:
                   player_y_change = -0.9
@@ -139,25 +172,34 @@ while running == True:
     # Enemy blit
 
     for item in range(number_enemies):
-          enemy_x[item] += enemy_x_change[item]
-          if enemy_x[item] <= 0:
+        if enemy_y[item] > 350:
+          for j in range(number_enemies):
+               enemy_y[j] = 2000
+               mixer.music.set_volume(0.1)
+          game_over(300,255)
+          break 
+
+        enemy_x[item] += enemy_x_change[item]
+        if enemy_x[item] <= 0:
                enemy_x_change[item] = 0.8
                enemy_y[item] += enemy_y_change[item]
           
-          if enemy_x[item] >= 736:
+        if enemy_x[item] >= 736:
                enemy_x_change[item] = -0.8
                enemy_y[item] += enemy_y_change[item]
 
-          collision = is_collision(bullet_x,bullet_y,enemy_x[item],enemy_y[item])
-          if collision:
+        collision = is_collision(bullet_x,bullet_y,enemy_x[item],enemy_y[item])
+        if collision:
                bullet_state = True
                bullet_y = 480
-               enemy_x[item] = random.randint(0, 800)
+               score += 50
+               enemy_x[item] = random.randint(0, 700)
                enemy_y[item] = random.randint(50, 150)
 
 
-          enemy(enemy_x[item], enemy_y[item])
+        enemy(enemy_x[item], enemy_y[item])
 
+        show_text(text_x,text_y)
 
 
     pygame.display.flip()
